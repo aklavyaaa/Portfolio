@@ -194,24 +194,68 @@ section{position:relative;z-index:2;overflow:hidden}
 ═══════════════════════════════════════ */
 #projects{background:var(--dark2)}
 .proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.4rem;margin-top:2.5rem}
-.proj-card{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--dark3);position:relative;transition:border-color .3s,box-shadow .4s,transform .4s;will-change:transform}
-.proj-card::after{content:'';position:absolute;inset:0;border-radius:10px;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(200,135,58,.13) 0%,transparent 65%);pointer-events:none;z-index:1;opacity:0;transition:opacity .3s}
+
+/* Base card */
+.proj-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--dark3);position:relative;transition:border-color .35s,box-shadow .45s,transform .45s;will-change:transform}
+.proj-card::after{content:'';position:absolute;inset:0;border-radius:12px;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(200,135,58,.13) 0%,transparent 65%);pointer-events:none;z-index:1;opacity:0;transition:opacity .3s}
+.proj-card:hover::after{opacity:1}
 .proj-card:active{border-color:rgba(200,135,58,.4)}
-.proj-card.feat{grid-column:1/-1;display:grid;grid-template-columns:1.2fr 1fr}
+
+/* SPOTLIGHT cards — full-width hero treatment for top 2 */
+.proj-card.spotlight{
+  grid-column:1/-1;
+  display:grid;
+  grid-template-columns:1.25fr 1fr;
+  border:1px solid rgba(200,135,58,.35);
+  background:var(--dark3);
+  position:relative;
+  overflow:hidden;
+}
+/* Glowing corner accent for spotlight */
+.proj-card.spotlight::before{
+  content:'';
+  position:absolute;
+  top:-40px;right:-40px;
+  width:180px;height:180px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(200,135,58,.18) 0%,transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+.proj-card.spotlight:hover{
+  border-color:var(--amber);
+  box-shadow:0 0 0 1px var(--amber), 0 28px 70px rgba(200,135,58,.22);
+}
+/* "HIGHLIGHT" badge */
+.spotlight-badge{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-family:var(--fm);font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink);background:var(--amber);
+  padding:4px 12px;border-radius:2px;
+  margin-bottom:.8rem;
+  width:fit-content;
+}
+.spotlight-badge svg{width:10px;height:10px;fill:var(--ink)}
+
+/* Images */
 .proj-img{overflow:hidden;aspect-ratio:16/9;position:relative}
-.proj-card.feat .proj-img{aspect-ratio:auto;height:100%;min-height:240px}
-.proj-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s,filter .4s;filter:sepia(.1) contrast(1.08)}
-.pov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(13,11,8,.65));pointer-events:none}
-.proj-body{padding:20px;position:relative;z-index:2}
-.proj-card.feat .proj-body{padding:28px 26px;display:flex;flex-direction:column;justify-content:center}
+.proj-card.spotlight .proj-img{aspect-ratio:auto;height:100%;min-height:260px}
+.proj-img img{width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.16,1,.3,1),filter .4s;filter:sepia(.08) contrast(1.1)}
+.proj-card:hover .proj-img img,.proj-card:active .proj-img img{transform:scale(1.07);filter:sepia(0) contrast(1.12)}
+.pov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 38%,rgba(13,11,8,.7));pointer-events:none}
+
+/* Body */
+.proj-body{padding:22px;position:relative;z-index:2}
+.proj-card.spotlight .proj-body{padding:30px 28px;display:flex;flex-direction:column;justify-content:center}
 .proj-num{font-family:var(--fm);font-size:.5rem;letter-spacing:.22em;color:rgba(200,135,58,.45);margin-bottom:.55rem}
 .proj-cat{font-family:var(--fm);font-size:.54rem;letter-spacing:.15em;color:var(--amber);text-transform:uppercase;margin-bottom:.4rem}
 .proj-title{font-family:var(--fd);font-size:1.35rem;font-weight:700;line-height:1.1;margin-bottom:.6rem;color:var(--chalk)}
+.proj-card.spotlight .proj-title{font-size:clamp(1.4rem,3vw,2rem)}
 .proj-desc{font-family:var(--fc);font-size:.84rem;font-weight:300;letter-spacing:.03em;color:var(--warm);line-height:1.6;margin-bottom:1.1rem}
 .proj-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem}
 .proj-tag{font-family:var(--fm);font-size:.5rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:3px 8px;border-radius:2px}
-.proj-link{display:inline-flex;align-items:center;gap:.6rem;font-family:var(--fc);font-size:.82rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--amber);text-decoration:none;border-bottom:1px solid rgba(200,135,58,.25);padding-bottom:2px;transition:color .3s,gap .3s}
-.proj-link:active{color:var(--chalk)}
+.proj-link{display:inline-flex;align-items:center;gap:.6rem;font-family:var(--fc);font-size:.82rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--amber);text-decoration:none;border-bottom:1px solid rgba(200,135,58,.25);padding-bottom:2px;transition:color .3s,gap .3s,border-color .3s}
+.proj-link:hover,.proj-link:active{color:var(--chalk);gap:1rem;border-color:var(--chalk)}
 
 /* ═══════════════════════════════════════
    SECTION 8 — PIANO
@@ -353,9 +397,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   .flip-card{height:200px}
 
   .proj-grid{grid-template-columns:1fr}
-  .proj-card.feat{grid-template-columns:1fr}
-  .proj-card.feat .proj-img{min-height:200px;border-radius:10px 10px 0 0;height:auto}
-  .proj-card.feat .proj-img{aspect-ratio:16/9}
+  .proj-card.spotlight{grid-template-columns:1fr}
+  .proj-card.spotlight .proj-img{min-height:200px;border-radius:12px 12px 0 0;height:auto;aspect-ratio:16/9}
 
   .edu-g{grid-template-columns:1fr}
   .cert-row{grid-template-columns:1fr}
@@ -448,7 +491,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 <section id="hero">
   <canvas id="terrain-canvas"></canvas>
   <div class="hero-inner">
-    <div class="hero-over">Dehradun, Uttarakhand · Open to Opportunities</div>
+    <div class="hero-over">Available for Opportunities · Open to Work</div>
     <h1 class="hero-grav" id="hero-grav"><span class="gw">EKLAVYA</span><em><span class="gw">VERMA</span></em></h1>
     <p class="hero-sub">Computer Operator · Graphic Designer · Aspiring Developer</p>
   </div>
@@ -622,26 +665,114 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 <section id="projects"><div class="sw">
   <div class="sec-badge R">07 — Projects</div>
   <h2 class="sec-h R d1">Live<br><em>Builds</em></h2>
-  <p class="sec-hint R d2">Tap or hover for 3D tilt effect</p>
+  <p class="sec-hint R d2">6 live websites · Hover for 3D tilt · Tap to visit</p>
+
   <div class="proj-grid">
-    <div class="proj-card feat R d2" data-tilt>
-      <div class="proj-img"><img src="https://i.postimg.cc/VNkN8h7K/logo-zoom.jpg" alt="Varnika"><div class="pov"></div></div>
+
+    <!-- ★ SPOTLIGHT 1 — Travel Website -->
+    <div class="proj-card spotlight R d2" data-tilt>
+      <div class="proj-img">
+        <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1000&q=80" alt="Travel Website">
+        <div class="pov"></div>
+      </div>
       <div class="proj-body">
-        <div class="proj-num">01 — Featured</div><div class="proj-cat">Jewellery E-Commerce</div>
-        <h3 class="proj-title">Varnika Jewellers</h3>
-        <p class="proj-desc">A live jewellery retail site. I contributed to retail infrastructure — inventory databases and operational systems at Frontier Jewellers.</p>
-        <div class="proj-tags"><span class="proj-tag">Retail</span><span class="proj-tag">E-Commerce</span><span class="proj-tag">Jewellery</span></div>
+        <div class="spotlight-badge">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Highlighted Build
+        </div>
+        <div class="proj-num">01 — Featured</div>
+        <div class="proj-cat">Travel & Tourism</div>
+        <h3 class="proj-title">Travel Explorer<br>Website</h3>
+        <p class="proj-desc">A fully-working, immersive travel website with destination showcases, trip planning UI, and stunning visual layouts. Built with modern HTML, CSS & JS — live and fully interactive.</p>
+        <div class="proj-tags"><span class="proj-tag">Travel</span><span class="proj-tag">Landing Page</span><span class="proj-tag">UI/UX</span><span class="proj-tag">Responsive</span></div>
+        <a href="https://devxpertss.github.io/demo/demo_travel" target="_blank" rel="noopener noreferrer" class="proj-link">Visit Live Site &nbsp;↗</a>
+      </div>
+    </div>
+
+    <!-- ★ SPOTLIGHT 2 — Varnika Jewellers -->
+    <div class="proj-card spotlight R d3" data-tilt>
+      <div class="proj-img">
+        <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1000&q=80" alt="Varnika Jewellers">
+        <div class="pov"></div>
+      </div>
+      <div class="proj-body">
+        <div class="spotlight-badge">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Highlighted Build
+        </div>
+        <div class="proj-num">02 — Featured</div>
+        <div class="proj-cat">Jewellery E-Commerce</div>
+        <h3 class="proj-title">Varnika<br>Jewellers</h3>
+        <p class="proj-desc">A live jewellery retail website with premium product showcases, store information, and full online presence. Connected to hands-on retail & inventory system work.</p>
+        <div class="proj-tags"><span class="proj-tag">Retail</span><span class="proj-tag">E-Commerce</span><span class="proj-tag">Jewellery</span><span class="proj-tag">Live</span></div>
         <a href="http://www.varnikajewellers.in/" target="_blank" rel="noopener noreferrer" class="proj-link">Visit Live Site &nbsp;↗</a>
       </div>
     </div>
+
+    <!-- Card 3 — Cafe -->
+    <div class="proj-card R d2" data-tilt>
+      <div class="proj-img">
+        <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=700&q=80" alt="Cafe">
+        <div class="pov"></div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-num">03</div>
+        <div class="proj-cat">Food & Hospitality</div>
+        <h3 class="proj-title">Café Landing Page</h3>
+        <p class="proj-desc">A warm, inviting café landing page with menu highlights, ambience photography, and a smooth modern layout.</p>
+        <div class="proj-tags"><span class="proj-tag">Café</span><span class="proj-tag">Landing Page</span><span class="proj-tag">HTML/CSS</span></div>
+        <a href="https://devxpertss.github.io/demo/demo_cafe" target="_blank" rel="noopener noreferrer" class="proj-link">Live Site &nbsp;↗</a>
+      </div>
+    </div>
+
+    <!-- Card 4 — Gym -->
     <div class="proj-card R d3" data-tilt>
-      <div class="proj-img"><img src="https://i.postimg.cc/25gVmfnR/image.png" alt="SQL"><div class="pov"></div></div>
-      <div class="proj-body"><div class="proj-num">02</div><div class="proj-cat">Database</div><h3 class="proj-title">SQL Inventory System</h3><p class="proj-desc">Advanced SQL, indexes, and query optimisation for efficient data tracking.</p><div class="proj-tags"><span class="proj-tag">SQL</span><span class="proj-tag">Database</span></div></div>
+      <div class="proj-img">
+        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=700&q=80" alt="Gym">
+        <div class="pov"></div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-num">04</div>
+        <div class="proj-cat">Health & Fitness</div>
+        <h3 class="proj-title">Gym Website</h3>
+        <p class="proj-desc">An energetic fitness brand website featuring class schedules, trainer profiles, pricing plans, and a bold visual identity.</p>
+        <div class="proj-tags"><span class="proj-tag">Gym</span><span class="proj-tag">Website</span><span class="proj-tag">Responsive</span></div>
+        <a href="https://devxpertss.github.io/demo/demo_gym" target="_blank" rel="noopener noreferrer" class="proj-link">Live Site &nbsp;↗</a>
+      </div>
     </div>
-    <div class="proj-card R d4" data-tilt>
-      <div class="proj-img"><img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?w=700&q=80" alt="Design"><div class="pov"></div></div>
-      <div class="proj-body"><div class="proj-num">03</div><div class="proj-cat">Print & Digital Design</div><h3 class="proj-title">Brand Collateral Suite</h3><p class="proj-desc">Full marketing suite — brochures, banners, flyers, and social graphics for multiple campaigns.</p><div class="proj-tags"><span class="proj-tag">Graphic Design</span><span class="proj-tag">Print</span></div></div>
+
+    <!-- Card 5 — Stationery -->
+    <div class="proj-card R d2" data-tilt>
+      <div class="proj-img">
+        <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=700&q=80" alt="Stationery">
+        <div class="pov"></div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-num">05</div>
+        <div class="proj-cat">Retail & Lifestyle</div>
+        <h3 class="proj-title">Stationery Store</h3>
+        <p class="proj-desc">A clean, minimal stationery landing page with product categories, featured collections, and a fresh typographic layout.</p>
+        <div class="proj-tags"><span class="proj-tag">Stationery</span><span class="proj-tag">Retail</span><span class="proj-tag">Landing Page</span></div>
+        <a href="https://devxpertss.github.io/demo/demo_stationary" target="_blank" rel="noopener noreferrer" class="proj-link">Live Site &nbsp;↗</a>
+      </div>
     </div>
+
+    <!-- Card 6 — Study/CodeSpire -->
+    <div class="proj-card R d3" data-tilt>
+      <div class="proj-img">
+        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=700&q=80" alt="Study Platform">
+        <div class="pov"></div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-num">06</div>
+        <div class="proj-cat">EdTech & Learning</div>
+        <h3 class="proj-title">CodeSpire — Study Platform</h3>
+        <p class="proj-desc">A modern study and learning platform with course listings, resource sections, and a clean academic interface. Hosted live on Vercel.</p>
+        <div class="proj-tags"><span class="proj-tag">EdTech</span><span class="proj-tag">Study</span><span class="proj-tag">Vercel</span></div>
+        <a href="https://codespire-six.vercel.app/" target="_blank" rel="noopener noreferrer" class="proj-link">Live Site &nbsp;↗</a>
+      </div>
+    </div>
+
   </div>
 </div></section>
 
@@ -717,7 +848,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     <div class="p-cell"><span class="p-icon">💻</span><div class="p-lbl">Assets</div><div class="p-val">Laptop</div></div>
     <div class="p-cell"><span class="p-icon">📋</span><div class="p-lbl">Documents</div><div class="p-val">Aadhar+PAN</div></div>
     <div class="p-cell"><span class="p-icon">🎂</span><div class="p-lbl">DOB</div><div class="p-val">23 Jun 2006</div></div>
-    <div class="p-cell"><span class="p-icon">📍</span><div class="p-lbl">Location</div><div class="p-val">Dehradun</div></div>
+    <div class="p-cell"><span class="p-icon">✨</span><div class="p-lbl">Status</div><div class="p-val">Available</div></div>
   </div>
 </div></section>
 
@@ -735,7 +866,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   </div>
   <div class="foot R d4">
     <p class="foot-copy">© 2025 Eklavya Verma — All Rights Reserved</p>
-    <p class="foot-addr">🏠 92 Saharanpur Chawk, Dehradun, Uttarakhand</p>
+    <p class="foot-addr">Computer Operator · Graphic Designer · Aspiring Developer</p>
   </div>
 </div></section>
 
@@ -960,19 +1091,17 @@ dragWrap.addEventListener('touchend',dUp,{passive:true});
 ════════════════════════════════════════════════════════════ */
 document.querySelectorAll('[data-tilt]').forEach(card=>{
   if(isTouch()){
-    card.addEventListener('touchstart',()=>{card.style.transition='transform .2s';card.style.transform='scale(1.01)';},{passive:true});
+    card.addEventListener('touchstart',()=>{card.style.transition='transform .2s';card.style.transform='scale(1.012)';},{passive:true});
     card.addEventListener('touchend',()=>{card.style.transform='';},{passive:true});
     return;
   }
   card.addEventListener('mousemove',e=>{
     const r=card.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
-    const rx=(y-r.height/2)/r.height*12,ry=(x-r.width/2)/r.width*12;
-    card.style.transform=`perspective(900px) rotateX(${-rx}deg) rotateY(${ry}deg) scale(1.025)`;
+    const rx=(y-r.height/2)/r.height*10,ry=(x-r.width/2)/r.width*10;
+    card.style.transform=`perspective(900px) rotateX(${-rx}deg) rotateY(${ry}deg) scale(1.02)`;
     card.style.transition='transform .05s linear';
     card.style.setProperty('--mx',(x/r.width*100)+'%');
     card.style.setProperty('--my',(y/r.height*100)+'%');
-    card.querySelector('.proj-card::after');
-    card.style.setProperty('--mx',(x/r.width*100)+'%');
   });
   card.addEventListener('mouseleave',()=>{card.style.transform='perspective(900px) rotateX(0) rotateY(0) scale(1)';card.style.transition='transform .5s cubic-bezier(.16,1,.3,1)';});
 });
@@ -1098,7 +1227,7 @@ new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)docum
 ════════════════════════════════════════════════════════════ */
 const termBody=document.getElementById('term-body'),termCursor=document.getElementById('term-cursor');
 let termStarted=false;
-const script=[{t:'cmd',v:'whoami'},{t:'out',v:'eklavya-verma · age 19 · dehradun'},{t:'cmd',v:'cat resume.json | grep role'},{t:'out',v:'"role":"Computer Operator + Graphic Designer"'},{t:'cmd',v:'./contact --all'},{t:'out',v:'📧  aklavyaverma6@gmail.com'},{t:'out',v:'📞  +91 74648 70444'},{t:'out',v:'📍  Dehradun, Uttarakhand'},{t:'cmd',v:'echo $STATUS'},{t:'out',v:'OPEN TO OPPORTUNITIES ✅'}];
+const script=[{t:'cmd',v:'whoami'},{t:'out',v:'eklavya-verma · age 19 · aspiring developer'},{t:'cmd',v:'cat resume.json | grep role'},{t:'out',v:'"role":"Computer Operator + Graphic Designer"'},{t:'cmd',v:'./contact --all'},{t:'out',v:'📧  aklavyaverma6@gmail.com'},{t:'out',v:'📞  +91 74648 70444'},{t:'cmd',v:'echo $STATUS'},{t:'out',v:'OPEN TO OPPORTUNITIES ✅'}];
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function typeLine(line){
   const span=document.createElement('span');span.className='tline';
