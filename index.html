@@ -295,39 +295,66 @@ section { position:relative; z-index:2; }
 
 
 /* ════════════════════════════════════════════════
-   HERO — full-screen, content centered both axes
+   HERO — fixed, content truly centred on screen
 ════════════════════════════════════════════════ */
 #hero {
-  height: 100svh; min-height: 640px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center; /* centred */
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 80px 6vw 0;  /* top padding for nav clearance only */
+  padding: 68px 6vw 0;   /* top = exact nav height so flex-center works correctly */
   overflow: hidden;
+  pointer-events: none;
 }
+#hero .hero-cta   { pointer-events: auto; }
+#hero .hero-name  { pointer-events: auto; cursor: crosshair; }
 
+/* Spacer keeps the rest of the page below the fixed hero */
+#hero-spacer { height: 100svh; min-height: 640px; display: block; }
+
+/* ── Kicker pill — absolutely at bottom, never near nav ── */
 .hero-kicker {
-  font-family: var(--fm); font-size: .64rem; letter-spacing: .3em;
-  color: var(--sage); text-transform: uppercase; margin-bottom: 2rem;
-  display: flex; align-items: center; justify-content: center; gap: 1rem;
+  position: absolute;
+  bottom: clamp(90px, 13vh, 140px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--fm); font-size: .58rem; letter-spacing: .24em;
+  color: var(--sage); text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: .8rem;
+  background: rgba(122,173,110,.08);
+  border: 1px solid rgba(122,173,110,.22);
+  padding: 7px 22px; border-radius: 100px;
   opacity: 0; animation: fadeIn .9s .3s forwards;
+  pointer-events: none;
 }
-.hero-kicker::before,
-.hero-kicker::after { content:''; width:28px; height:1px; background:var(--sage); }
+.hero-kicker::before, .hero-kicker::after { display: none; }
 
+/* ── Main name ── */
 .hero-name {
   font-family: var(--fu);
-  font-size: clamp(3.6rem, 11vw, 10rem);
-  font-weight: 900; line-height: .88; letter-spacing: -.03em; color: var(--chalk);
-  opacity: 0; animation: fadeIn .9s .55s forwards;
+  font-size: clamp(3.8rem, 11.5vw, 10.5rem);
+  font-weight: 900;
+  line-height: .9;
+  letter-spacing: -.03em;
+  color: var(--chalk);
+  opacity: 0;
+  animation: fadeIn .9s .5s forwards;
+  /* no margin-top — padding-top on #hero handles nav clearance */
 }
 .hero-name .stroke {
-  -webkit-text-stroke: 1.5px rgba(242,237,232,.55);
-  color: transparent; display: block;
+  -webkit-text-stroke: 1.5px rgba(242,237,232,.52);
+  color: transparent;
+  display: block;
 }
 .hero-name .accent {
-  color: var(--sage); display: block;
-  text-shadow: 0 0 80px rgba(122,173,110,.4);
+  color: var(--sage);
+  display: block;
+  text-shadow: 0 0 80px rgba(122,173,110,.35);
 }
 
 .hero-sub {
@@ -344,11 +371,14 @@ section { position:relative; z-index:2; }
   opacity: 0; animation: fadeIn .9s 1s forwards;
 }
 
-/* Scroll hint */
+/* Scroll hint — bottom centre, above kicker */
 .hero-scroll {
-  position: absolute; bottom: 7vh; left: 50%; transform: translateX(-50%);
+  position: absolute;
+  bottom: clamp(28px, 5vh, 52px);
+  left: 50%; transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: .7rem;
   opacity: 0; animation: fadeIn .8s 1.5s forwards;
+  pointer-events: none;
 }
 .scroll-line {
   width: 1px; height: 52px;
@@ -799,6 +829,85 @@ section { position:relative; z-index:2; }
 
 
 /* ════════════════════════════════════════════════
+   PRELOADER — holds everything until video is ready
+════════════════════════════════════════════════ */
+#preloader {
+  position: fixed; inset: 0; z-index: 99000;
+  background: #060a06;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2.4rem;
+  transition: opacity .8s var(--ease);
+}
+#preloader.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+#preloader.gone { display: none; }
+
+/* Animated logo mark */
+.pre-logo {
+  font-family: var(--fu); font-size: 1.1rem; letter-spacing: .32em;
+  color: var(--sage); text-transform: uppercase;
+  display: flex; align-items: center; gap: .7rem;
+}
+.pre-logo-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--sage); box-shadow: 0 0 18px var(--sage);
+  animation: pulseDot 1.4s infinite;
+}
+
+/* Rotating ring */
+.pre-ring {
+  width: 64px; height: 64px; position: relative;
+}
+.pre-ring svg {
+  width: 100%; height: 100%;
+  animation: spinRing 1.4s linear infinite;
+}
+.pre-ring circle {
+  fill: none; stroke-width: 2;
+}
+.pre-ring .tr { stroke: rgba(122,173,110,.12); }
+.pre-ring .tf { stroke: var(--sage); stroke-linecap: round; stroke-dasharray: 120; stroke-dashoffset: 80; }
+@keyframes spinRing { to { transform: rotate(360deg); } }
+
+/* Loading bar */
+.pre-bar-wrap {
+  width: min(260px, 60vw); height: 1px;
+  background: rgba(122,173,110,.12); border-radius: 1px; overflow: hidden;
+}
+.pre-bar {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--moss), var(--sage), var(--gold));
+  border-radius: 1px;
+  box-shadow: 0 0 8px var(--sage);
+  transition: width .3s ease;
+}
+
+/* Status text */
+.pre-status {
+  font-family: var(--fm); font-size: .52rem; letter-spacing: .24em;
+  color: var(--muted); text-transform: uppercase;
+}
+
+/* Organic floating dots */
+.pre-dots {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.pre-dot {
+  position: absolute; border-radius: 50%;
+  background: var(--sage); opacity: 0;
+  animation: floatDot linear infinite;
+}
+@keyframes floatDot {
+  0%   { opacity: 0;   transform: translateY(0)    scale(1); }
+  20%  { opacity: .18; }
+  80%  { opacity: .06; }
+  100% { opacity: 0;   transform: translateY(-90vh) scale(.4); }
+}
+
+
+/* ════════════════════════════════════════════════
    LIGHTBOX
 ════════════════════════════════════════════════ */
 #lb {
@@ -849,7 +958,7 @@ section { position:relative; z-index:2; }
   .pers-row   { grid-template-columns:1fr 1fr; }
   .c-big      { font-size:clamp(2.6rem,14vw,4.5rem); }
   .hero-name  { font-size:clamp(3rem,14vw,6rem); }
-  #hero       { padding:80px 5vw 0; }
+  #hero       { padding: 58px 5vw 0; }
   .hero-sub   { font-size:.92rem; }
   .hero-cta   { flex-direction:column; align-items:center; }
 }
@@ -862,6 +971,28 @@ section { position:relative; z-index:2; }
 </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════
+     PRELOADER
+     Shown until the active video fires 'canplaythrough'
+════════════════════════════════ -->
+<div id="preloader">
+  <!-- Floating ambient dots -->
+  <div class="pre-dots" id="pre-dots"></div>
+
+  <!-- Centre content -->
+  <div class="pre-logo"><span class="pre-logo-dot"></span>EV/</div>
+
+  <div class="pre-ring">
+    <svg viewBox="0 0 64 64">
+      <circle class="tr" cx="32" cy="32" r="28"/>
+      <circle class="tf" cx="32" cy="32" r="28"/>
+    </svg>
+  </div>
+
+  <div class="pre-bar-wrap"><div class="pre-bar" id="pre-bar"></div></div>
+  <p class="pre-status" id="pre-status">Loading experience…</p>
+</div>
 
 <!-- ══════════════════════════════
      VIDEO BG — DESKTOP
@@ -931,7 +1062,7 @@ section { position:relative; z-index:2; }
 
 <!-- ════════ HERO — centred on screen ════════ -->
 <section id="hero">
-  <p class="hero-kicker">Available for Opportunities · Open to Work</p>
+  <!-- Name block is centred — kicker floats at bottom via position:absolute -->
   <h1 class="hero-name">
     EKLAVYA
     <span class="stroke">VERMA</span>
@@ -942,8 +1073,13 @@ section { position:relative; z-index:2; }
     <a href="#projects" class="btn btn-primary">View Projects</a>
     <a href="#contact"  class="btn btn-ghost">Get In Touch</a>
   </div>
+  <!-- Kicker anchored to bottom of hero, never near the nav -->
+  <p class="hero-kicker">Available for Opportunities · Open to Work</p>
   <div class="hero-scroll"><div class="scroll-line"></div><span class="scroll-txt">Scroll</span></div>
 </section>
+
+<!-- Spacer: pushes page content below the fixed hero -->
+<div id="hero-spacer"></div>
 
 <!-- MARQUEE -->
 <div class="mq-wrap"><div class="mq-track">
@@ -1097,11 +1233,11 @@ section { position:relative; z-index:2; }
   <div class="drag-note R d2">Swipe to explore</div>
   <div id="tl-wrap" class="R d3">
     <div id="tl-track">
-      <div class="tl-item"><div class="tl-dot">💎</div><span class="tl-date">Mar 2026 — Present</span><h3 class="tl-co">Jaiguru<br>Jewellers</h3><p class="tl-role">Cashier & Computer Operator</p><p class="tl-desc">Currently handling cash operations, digital inventory, and customer-facing systems at Jaiguru Jewellers — building on direct jewellery retail experience.</p></div>
-      <div class="tl-item"><div class="tl-dot">💍</div><span class="tl-date">Apr 2025 — Mar 2026</span><h3 class="tl-co">Frontier<br>Jewellers</h3><p class="tl-role">Cashier & Computer Operator</p><p class="tl-desc">Managed daily cash transactions, end-of-day financial reconciliations, digital inventory records, and front-desk customer service with zero discrepancies.</p></div>
       <div class="tl-item"><div class="tl-dot">🎨</div><span class="tl-date">May 2024 — Sep 2024</span><h3 class="tl-co">Shree Sai<br>Printers</h3><p class="tl-role">Graphic Designer</p><p class="tl-desc">Designed visual layouts, brochures, and multimedia content for diverse client projects across print and digital in a deadline-driven environment.</p></div>
-      <div class="tl-item"><div class="tl-dot">📚</div><span class="tl-date">Feb 2026</span><h3 class="tl-co">uniAthena<br>CIQ, UK</h3><p class="tl-role">SQL Certification</p><p class="tl-desc">Internationally recognised certification in SQL Statements & Indexes, certified by CIQ, United Kingdom.</p></div>
+      <div class="tl-item"><div class="tl-dot">💍</div><span class="tl-date">Apr 2025 — Mar 2026</span><h3 class="tl-co">Frontier<br>Jewellers</h3><p class="tl-role">Cashier & Computer Operator</p><p class="tl-desc">Managed daily cash transactions, end-of-day financial reconciliations, digital inventory records, and front-desk customer service with zero discrepancies.</p></div>
       <div class="tl-item"><div class="tl-dot">💡</div><span class="tl-date">Completed</span><h3 class="tl-co">Best Computer<br>Technology</h3><p class="tl-role">BCC Diploma · 72%</p><p class="tl-desc">Basic Computer Course — programming fundamentals, office tools, data entry, and core computer operations.</p></div>
+      <div class="tl-item"><div class="tl-dot">📚</div><span class="tl-date">Feb 2026</span><h3 class="tl-co">uniAthena<br>CIQ, UK</h3><p class="tl-role">SQL Certification</p><p class="tl-desc">Internationally recognised certification in SQL Statements & Indexes, certified by CIQ, United Kingdom.</p></div>
+      <div class="tl-item"><div class="tl-dot">💎</div><span class="tl-date">Mar 2026 — Present</span><h3 class="tl-co">Jaiguru<br>Jewellers</h3><p class="tl-role">Cashier & Computer Operator</p><p class="tl-desc">Currently handling cash operations, digital inventory, and customer-facing systems at Jaiguru Jewellers — building on direct jewellery retail experience.</p></div>
       <div class="tl-item" style="opacity:.25"><div class="tl-dot" style="border-style:dashed">✨</div><span class="tl-date">Next</span><h3 class="tl-co">Your<br>Company?</h3><p class="tl-role">Open to Opportunities</p><p class="tl-desc">Ready to bring creativity and efficiency to your team.</p></div>
     </div>
   </div>
@@ -1251,6 +1387,102 @@ section { position:relative; z-index:2; }
      ALL SCRIPTS
 ════════════════════════════════════════════════ -->
 <script>
+
+/* ─────────────────────────────────────────────
+   PRELOADER
+   Waits for the active video (desktop or mobile)
+   to be ready to play before dismissing.
+───────────────────────────────────────────── */
+(function () {
+  const pl      = document.getElementById('preloader');
+  const bar     = document.getElementById('pre-bar');
+  const status  = document.getElementById('pre-status');
+  const dotsEl  = document.getElementById('pre-dots');
+
+  /* ── Spawn ambient floating dots ── */
+  for (let i = 0; i < 22; i++) {
+    const d = document.createElement('div');
+    d.className = 'pre-dot';
+    const sz = 2 + Math.random() * 5;
+    d.style.cssText = [
+      `width:${sz}px`, `height:${sz}px`,
+      `left:${Math.random() * 100}%`,
+      `bottom:${-sz}px`,
+      `animation-duration:${4 + Math.random() * 8}s`,
+      `animation-delay:${Math.random() * 6}s`
+    ].join(';');
+    dotsEl.appendChild(d);
+  }
+
+  /* ── Pick the video that will actually show ── */
+  const isMobile = window.matchMedia('(max-width:768px)').matches;
+  const vid = document.querySelector(
+    isMobile ? '.video-bg-mobile video' : '.video-bg-desktop video'
+  );
+
+  /* Fake progress bar — crawls to 85% while waiting, jumps to 100% when ready */
+  let prog = 0;
+  const tick = setInterval(() => {
+    if (prog < 85) {
+      prog += (85 - prog) * 0.04;
+      bar.style.width = prog + '%';
+    }
+  }, 60);
+
+  function dismiss() {
+    clearInterval(tick);
+    bar.style.width = '100%';
+    status.textContent = 'Ready ✦';
+
+    /* Short pause so user sees 100% then fade out */
+    setTimeout(() => {
+      pl.classList.add('hide');
+      /* Remove from DOM after transition */
+      pl.addEventListener('transitionend', () => pl.classList.add('gone'), { once: true });
+    }, 420);
+  }
+
+  if (!vid) { dismiss(); return; }
+
+  /* canplaythrough = enough buffered to play without interruption */
+  if (vid.readyState >= 3) {
+    /* Already buffered (rare but possible on cached reload) */
+    dismiss();
+  } else {
+    vid.addEventListener('canplaythrough', dismiss, { once: true });
+    /* Safety fallback: don't block forever if network is slow */
+    setTimeout(dismiss, 8000);
+  }
+
+  /* Progress events to animate bar more realistically */
+  vid.addEventListener('progress', () => {
+    try {
+      if (vid.buffered.length) {
+        const buffPct = (vid.buffered.end(0) / (vid.duration || 1)) * 85;
+        if (buffPct > prog) { prog = buffPct; bar.style.width = prog + '%'; }
+        if (prog > 60) status.textContent = 'Almost there…';
+      }
+    } catch (e) {}
+  });
+})();
+
+
+/* ─────────────────────────────────────────────
+   HERO SCROLL-FADE
+   The hero is fixed — as the page scrolls past it,
+   we fade it out so the marquee slides cleanly over.
+   Text stays at its original position, only fades.
+───────────────────────────────────────────── */
+(function () {
+  const heroEl = document.getElementById('hero');
+  const fadeZone = window.innerHeight * 0.55; /* start fading after 55% scroll */
+
+  window.addEventListener('scroll', () => {
+    const ratio = Math.min(scrollY / fadeZone, 1);
+    heroEl.style.opacity = 1 - ratio;
+  }, { passive: true });
+})();
+
 
 /* ─────────────────────────────────────────────
    UNIFIED POINTER
@@ -1611,19 +1843,139 @@ document.addEventListener('touchend', e => {
 
 
 /* ─────────────────────────────────────────────
-   HERO NAME GRAVITY SCATTER  (hover / tap)
+   HERO NAME — PREMIUM MAGNETIC HOVER
+   
+   EKLAVYA → each letter magnetically floats away
+             from cursor with smooth spring physics.
+             Subtle sage glow on affected letters.
+             Font stays clean and legible.
+
+   VERMA   → on hover the outline fills in gold,
+             letters do a smooth staggered lift.
+             On mouseleave they drop back.
+
+   No random colour flashes. No font distortion.
+   Elegant, premium, Awwwards-level.
 ───────────────────────────────────────────── */
-document.querySelectorAll('.hero-name .stroke, .hero-name .accent').forEach(word => {
-  const text = word.textContent.trim(); if (!text || text === '.') return;
-  word.innerHTML = [...text].map(c => `<span style="display:inline-block">${c}</span>`).join('');
-  const spans = word.querySelectorAll('span');
-  function scatter() { spans.forEach(s => { const rx = (Math.random() - .5) * 90, ry = (Math.random() - .5) * 60, rot = (Math.random() - .5) * 30; s.style.transform = `translate(${rx}px,${ry}px) rotate(${rot}deg)`; s.style.opacity = '.22'; s.style.transition = `transform ${.25 + Math.random() * .25}s cubic-bezier(.34,1.56,.64,1),opacity .22s`; }); }
-  function gather() { spans.forEach((s, i) => { s.style.transform = 'translate(0,0) rotate(0deg)'; s.style.opacity = '1'; s.style.transition = `transform ${.34 + i * .04}s cubic-bezier(.34,1.56,.64,1),opacity .22s`; }); }
-  word.addEventListener('mouseenter', scatter);
-  word.addEventListener('mouseleave', gather);
-  let sg = false;
-  word.addEventListener('touchstart', e => { e.preventDefault(); if (sg) { gather(); sg = false; } else { scatter(); sg = true; } }, { passive: false });
-});
+(function () {
+
+  /* ── Shared letter wrapper helper ── */
+  function wrapLetters(el) {
+    const raw = el.textContent.trim();
+    if (!raw) return null;
+    el.innerHTML = [...raw].map(c =>
+      `<span style="display:inline-block;transition:transform .55s cubic-bezier(.34,1.56,.64,1),color .35s ease,text-shadow .35s ease,filter .35s ease">${c}</span>`
+    ).join('');
+    return el.querySelectorAll('span');
+  }
+
+  /* ══ EKLAVYA — magnetic float on cursor proximity ══ */
+  (function () {
+    const nameEl = document.querySelector('.hero-name');
+    if (!nameEl) return;
+    const firstNode = nameEl.firstChild;
+    if (!firstNode || firstNode.nodeType !== 3) return;
+
+    const raw = firstNode.textContent.trim();
+    const wrapper = document.createElement('span');
+    wrapper.id = 'hn-eklavya';
+    wrapper.style.cssText = 'display:block;';
+    wrapper.innerHTML = [...raw].map(c =>
+      `<span style="display:inline-block;transition:transform .5s cubic-bezier(.34,1.56,.64,1),text-shadow .3s ease">${c}</span>`
+    ).join('');
+    nameEl.replaceChild(wrapper, firstNode);
+    const spans = wrapper.querySelectorAll('span');
+
+    let raf;
+    wrapper.addEventListener('mousemove', e => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const mx = e.clientX, my = e.clientY;
+        spans.forEach(s => {
+          const r   = s.getBoundingClientRect();
+          const cx  = r.left + r.width  / 2;
+          const cy  = r.top  + r.height / 2;
+          const dx  = mx - cx, dy = my - cy;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          const maxR = 200;
+          if (dist < maxR) {
+            const force = (1 - dist / maxR);
+            const angle = Math.atan2(dy, dx);
+            /* Gentle push — max 40px, no rotation, no scale distortion */
+            const push = force * 40;
+            s.style.transform   = `translate(${-Math.cos(angle)*push}px, ${-Math.sin(angle)*push}px)`;
+            s.style.textShadow  = `0 0 ${Math.round(force*32)}px rgba(122,173,110,${(force*.6).toFixed(2)})`;
+          } else {
+            s.style.transform  = '';
+            s.style.textShadow = '';
+          }
+        });
+      });
+    });
+
+    wrapper.addEventListener('mouseleave', () => {
+      cancelAnimationFrame(raf);
+      spans.forEach(s => { s.style.transform = ''; s.style.textShadow = ''; });
+    });
+
+    /* Touch — gentle scatter then spring back */
+    wrapper.addEventListener('touchstart', e => {
+      e.preventDefault();
+      spans.forEach((s, i) => {
+        const dir = i % 2 === 0 ? 1 : -1;
+        s.style.transition = `transform ${.3 + i * .04}s cubic-bezier(.34,1.56,.64,1)`;
+        s.style.transform  = `translateY(${dir * -28}px)`;
+        s.style.textShadow = `0 0 22px rgba(122,173,110,.55)`;
+      });
+      setTimeout(() => spans.forEach(s => {
+        s.style.transform = '';
+        s.style.textShadow = '';
+      }), 700);
+    }, { passive: false });
+  })();
+
+
+  /* ══ VERMA (.stroke) — staggered gold lift on hover ══ */
+  (function () {
+    const strokeEl = document.querySelector('.hero-name .stroke');
+    if (!strokeEl) return;
+    /* Override the stroke colour to gold on hover via JS */
+    const spans = wrapLetters(strokeEl);
+    if (!spans) return;
+
+    strokeEl.addEventListener('mouseenter', () => {
+      spans.forEach((s, i) => {
+        const delay = i * 42;
+        s.style.transitionDelay  = delay + 'ms';
+        s.style.transform        = 'translateY(-12px)';
+        s.style.webkitTextStroke = '1.5px rgba(212,168,82,.9)';
+        s.style.textShadow       = `0 12px 28px rgba(212,168,82,.3)`;
+      });
+    });
+    strokeEl.addEventListener('mouseleave', () => {
+      spans.forEach((s, i) => {
+        s.style.transitionDelay  = (spans.length - 1 - i) * 32 + 'ms';
+        s.style.transform        = '';
+        s.style.webkitTextStroke = '';
+        s.style.textShadow       = '';
+      });
+    });
+
+    /* Touch — toggle gold */
+    let active = false;
+    strokeEl.addEventListener('touchstart', e => {
+      e.preventDefault();
+      active = !active;
+      spans.forEach((s, i) => {
+        s.style.transitionDelay  = i * 38 + 'ms';
+        s.style.transform        = active ? 'translateY(-10px)' : '';
+        s.style.webkitTextStroke = active ? '1.5px rgba(212,168,82,.9)' : '';
+        s.style.textShadow       = active ? '0 10px 24px rgba(212,168,82,.3)' : '';
+      });
+    }, { passive: false });
+  })();
+
+})();
 
 </script>
 </body>
